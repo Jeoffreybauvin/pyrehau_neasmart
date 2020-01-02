@@ -1,4 +1,4 @@
-# py_rehau_neasmart
+# pyrehau_neasmart
 
 A python 3 package to interact with Rehaut Nea Smart interface
 
@@ -16,25 +16,59 @@ Here is the interface provided by Rehau :
 
 <img src="misc/images/neasmart_2.png" width="50%">
 
-The problem : Nea Smart don't expose any public API. We need to play with Nea Smart interface. If you check at your web console, you'll see this : http://neasmart_ip/data/cyclic.xml. It's an XML file with all the informations you need. If you want to do some changes, you can post an XML form to /data/changes.xml.
+The problem : Nea Smart doesn't expose any public API. We need to play with the Nea Smart interface. If you check your web console, you'll see this : http://neasmart_ip/data/cyclic.xml. It's an XML file with all the information you need. If you want to do some changes, you can post an XML form to /data/changes.xml, with no authentication :(.
 
 Basically, this python package is a wrapper for this weird API :).
 
+## Installation
+
+`pip install pyrehau_neasmart`
+
+## To Do / Done :
+
+- [x] Wrapper for xml documents
+- [x] Get HEAT AREAS
+- [ ] Get IODEVICES
+- [ ] Modify (POST) some informations (modify the heat area's wanted temperature)
+- [ ] Logs ?
+- [ ] Feel free to submit an issue ;).
+
+## Usage
+
+Set the right IP address, and nothig more.
+
+By default, properties will be refreshed by querying NeaSmart only if last refresh was more than 1 second ago. Pass "auto_update=False"  to disable that behavior (in which case you'll need to call update_status() yourself).
 
 ```
 from pyrehau_neasmart import RehauNeaSmart
-pp = pprint.PrettyPrinter(indent=2)
 
 rh = RehauNeaSmart('192.168.1.18')
+# rh = RehauNeaSmart('192.168.1.18', auto_update=False)
+```
 
-print(rh.heatareas())
+### List of heatareas
 
-# Get a custom heatarea
-ha = rh.heatareas()[2]
+```
+>>> rh.heatareas()
+[<pyrehau_neasmart.RehauNeaSmartHeatarea object at 0x7f634adf6860>, <pyrehau_neasmart.RehauNeaSmartHeatarea object at 0x7f634adf65f8>, <pyrehau_neasmart.RehauNeaSmartHeatarea object at 0x7f634adf6668>, <pyrehau_neasmart.RehauNeaSmartHeatarea object at 0x7f634adf66a0>, <pyrehau_neasmart.RehauNeaSmartHeatarea object at 0x7f634adf6630>]
 
-print(ha.t_actual)
-print(ha.t_actual_ext)
-print(ha.heatarea_state)
-print(ha.islocked)
-print(ha.status)
+# See below for RehauNeaSmartHeatarea object
+```
+
+### Select a heatarea and get informations
+
+```
+>>> my_heatarea = rh.heatareas()[0]
+
+>>> my_heatarea.status
+{'heatarea_mode': '2', 't_actual': '23.4', 't_actual_ext': '23.4', 't_target': '18.0', 't_target_base': '18.0', 'heatarea_state': '0', 'program_source': '0', 'program_week': '2', 'program_weekend': '0', 'party': '0', 'party_remainingtime': '0', 'presence': '0', 'islocked': '0'}
+```
+
+Every property you'll get in status in directly callable :
+
+```
+>>> my_heatarea.t_actual
+'23.4'
+>>> my_heatarea.program_week
+'2'
 ```
