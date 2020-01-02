@@ -12,15 +12,15 @@ More informations here : https://www.rehau.com/en-en/nea-smart/english / https:/
 
 Here is the interface provided by Rehau :
 
-<img src="misc/images/neasmart_1.png" width="50%">
+<img src="misc/images/neasmart_1.png" width="50%" />
 
-<img src="misc/images/neasmart_2.png" width="50%">
+<img src="misc/images/neasmart_2.png" width="50%" />
 
-The problem : Nea Smart doesn't expose any public API. We need to play with the Nea Smart interface. If you check your web console, you'll see this : http://neasmart_ip/data/cyclic.xml. It's an XML file with all the information you need. If you want to do some changes, you can post an XML form to /data/changes.xml, with no authentication :(.
+The problem : Nea Smart doesn't expose any public API. We need to play with the Nea Smart interface. If you check your web console, you'll see this : http://neasmart_ip/data/cyclic.xml. It's an XML file with all the information you need. If you want to do some changes, you can post an XML form to /data/changes.xml, with no authentication.
 
-Basically, this python package is a wrapper for this weird API :).
+Basically, this python package is a wrapper for this weird API.
 
-## Installation
+## Installation
 
 `pip install pyrehau_neasmart`
 
@@ -33,7 +33,7 @@ Basically, this python package is a wrapper for this weird API :).
 - [ ] Logs ?
 - [ ] Feel free to submit an issue ;).
 
-## Usage
+## Usage
 
 Set the right IP address, and nothig more.
 
@@ -46,7 +46,7 @@ rh = RehauNeaSmart('192.168.1.18')
 # rh = RehauNeaSmart('192.168.1.18', auto_update=False)
 ```
 
-### List of heatareas
+### List of heatareas
 
 ```
 >>> rh.heatareas()
