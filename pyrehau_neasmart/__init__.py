@@ -10,7 +10,8 @@ except ImportError:
 __author__ = "Jeoffrey Bauvin"
 
 _MODES = ["auto", "day", "night"]
-_PATH_CYCLIC = '/data/cyclic.xml'
+_PATH_GET = '/data/static.xml'
+_PATH_POST = '/data/changes.xml'
 
 def autoupdate_property(func):
     def update_and_get(*args):
@@ -25,9 +26,33 @@ class RehauNeaSmart(object):
         self._port = port
         self._auto_update = auto_update
 
-    def _make_request(self, request=None):
-        url = 'http://%s:%s%s' % (self._host, self._port, _PATH_CYCLIC)
-        r = requests.get(url)
+    def _make_request(self, type='GET', request=None):
+        print('New request %s' % (type))
+        if type == 'GET':
+            url = 'http://%s:%s%s' % (self._host, self._port, _PATH_GET)
+            r = requests.get(url)
+        elif type == 'POST':
+            print('making a post request')
+            url = 'http://%s:%s%s' % (self._host, self._port, _PATH_POST)
+            headers = {
+                'Accept': '*/*',
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            }
+            device = request['device']
+            key = request['key']
+            value = request['value']
+            id = request['id']
+            # TODO : build xml with elementree ?
+            data = """<?xml version="1.0" encoding="UTF-8"?>
+            <Devices>
+                <Device>
+                    <%s nr="%s">
+                        <%s>%s</%s>
+                    </%s>
+                </Device>
+            </Devices>""" % (device, id, key, value, key, device)
+            r = requests.post(url, headers=headers, data=data)
         if r.status_code == 200:
             root = ET.fromstring(r.text)
             return root
@@ -38,8 +63,8 @@ class RehauNeaSmart(object):
     def heatareas(self):
         """Return a list of heatareas"""
         devices = []
-        a = self._make_request()
-        for child in a.iter(tag='HEATAREA'):
+        oneshot = self._make_request(type='GET')
+        for child in oneshot.iter(tag='HEATAREA'):
             devices.append(RehauNeaSmartHeatarea(self, id=child.attrib['nr'], auto_update=self._auto_update))
         return devices
 
@@ -51,9 +76,11 @@ class RehauNeaSmartHeatarea(object):
         self._last_refresh_time = 0
         self._auto_update = auto_update
 
-    def _make_request(self, request=None):
-        print('I m making a new request')
-        return self._bridge._make_request()
+    def _make_request(self, type='GET', request=None):
+        if type == 'POST':
+            request['id'] = self._id
+            request['device'] = 'HEATAREA'
+        return self._bridge._make_request(type=type, request=request)
 
 
     def _update_if_needed(self):
@@ -88,6 +115,7 @@ class RehauNeaSmartHeatarea(object):
     @autoupdate_property
     def status(self):
         return {
+            "heatarea_name": self._heatarea_name,
             "heatarea_mode": self._heatarea_mode,
             "t_actual": self._t_actual,
             "t_actual_ext": self._t_actual_ext,
@@ -103,25 +131,37 @@ class RehauNeaSmartHeatarea(object):
             "islocked": self._islocked
         }
 
+    def set_t_target(self, value):
+        request = {
+            'value': value,
+            'key': 'T_TARGET',
+        }
+        self._make_request(type='POST', request=request)
+        self._clear_status()
+
+    @autoupdate_property
+    def heatarea_name(self):
+        return self._heatarea_name
+
     @autoupdate_property
     def heatarea_mode(self):
         return self._heatarea_mode
 
     @autoupdate_property
     def t_actual(self):
-        return self._t_actual
+        return float(self._t_actual)
 
     @autoupdate_property
     def t_actual_ext(self):
-        return self._t_actual_ext
+        return float(self._t_actual_ext)
 
     @autoupdate_property
     def t_target(self):
-        return self._t_target
+        return float(self._t_target)
 
     @autoupdate_property
     def t_target_base(self):
-        return self._t_target_base
+        return float(self._t_target_base)
 
     @autoupdate_property
     def heatarea_state(self):

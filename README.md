@@ -24,11 +24,16 @@ Basically, this python package is a wrapper for this weird API.
 
 `pip install pyrehau_neasmart`
 
+## Changelog
+
+See CHANGELOG.md
+
 ## To Do / Done :
 
 - [x] Wrapper for xml documents
 - [x] Get HEAT AREAS
 - [ ] Get IODEVICES
+- [ ] Get heatareas's schedules
 - [ ] Modify (POST) some informations (modify the heat area's wanted temperature)
 - [ ] Logs ?
 - [ ] Feel free to submit an issue ;).
@@ -61,7 +66,20 @@ rh = RehauNeaSmart('192.168.1.18')
 >>> my_heatarea = rh.heatareas()[0]
 
 >>> my_heatarea.status
-{'heatarea_mode': '2', 't_actual': '23.4', 't_actual_ext': '23.4', 't_target': '18.0', 't_target_base': '18.0', 'heatarea_state': '0', 'program_source': '0', 'program_week': '2', 'program_weekend': '0', 'party': '0', 'party_remainingtime': '0', 'presence': '0', 'islocked': '0'}
+{ 'heatarea_mode': '2',
+  'heatarea_name': 'ChBlanche',
+  'heatarea_state': '0',
+  'islocked': '0',
+  'party': '0',
+  'party_remainingtime': '0',
+  'presence': '0',
+  'program_source': '0',
+  'program_week': '1',
+  'program_weekend': '1',
+  't_actual': '22.0',
+  't_actual_ext': '22.0',
+  't_target': '18.0',
+  't_target_base': '18.0'}
 ```
 
 Every property you'll get in status in directly callable :
@@ -71,4 +89,10 @@ Every property you'll get in status in directly callable :
 '23.4'
 >>> my_heatarea.program_week
 '2'
+```
+
+### Change parameter from heatarea
+
+```
+>>> ha.set_t_target(18)
 ```
