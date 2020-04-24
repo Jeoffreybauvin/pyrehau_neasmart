@@ -36,6 +36,7 @@ See CHANGELOG.md
 - [ ] Get heatareas's schedules
 - [x] Modify (POST) some informations (modify the heat area's wanted temperature)
 - [ ] Logs ?
+- [ ] Better handle an incomplete XML from Rehau
 - [ ] Feel free to submit an issue ;).
 
 ## Usage
