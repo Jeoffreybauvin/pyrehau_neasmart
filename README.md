@@ -52,6 +52,15 @@ rh = RehauNeaSmart('192.168.1.18')
 # rh = RehauNeaSmart('192.168.1.18', auto_update=False)
 ```
 
+## Rehau and it's incomplete chunks
+
+While I was developing this, I came accross this issue : sometimes, when making a lot (~ 10 requests / 30 seconds), I had some incomplete XML files. In fact, I wasn't getting the whole XML. See this : https://blog.petrzemek.net/2018/04/22/on-incomplete-http-reads-and-the-requests-library-in-python/
+
+And indeed : "Warning : incomplete read (3777 bytes read, 7817 more expected)". That's why you can see a retry method if it's happening :(.
+
+If you want to disable the auto retry method, you can set "auto_retry_on_incomplete_http" to False when you first call RehauNeaSmart object.
+
+
 ### List of heatareas
 
 ```

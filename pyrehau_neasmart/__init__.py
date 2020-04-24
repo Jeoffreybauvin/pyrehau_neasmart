@@ -13,6 +13,10 @@ _MODES = ["auto", "day", "night"]
 _PATH_GET = '/data/static.xml'
 _PATH_POST = '/data/changes.xml'
 
+_AUTO_UPDATE = True
+_HTTP_TIMEOUT = 5
+_AUTO_RETRY_ON_INCOMPLETE_HTTP = True
+
 HEATAREA_MODES = {
     0: "AUTO",
     1: "COMFORT",
@@ -35,43 +39,65 @@ class RehauNeaSmartError(Exception):
         return(repr(self.value))
 
 class RehauNeaSmart(object):
-    def __init__(self, host, port=80, auto_update=True):
+    def __init__(self, host, port=80, auto_update=_AUTO_UPDATE, auto_retry_on_incomplete_http=_AUTO_RETRY_ON_INCOMPLETE_HTTP, timeout=_HTTP_TIMEOUT):
         """
         Args:
             host (string): Rehau Nea Smart hostname (or IP)
             port (integer): default 80
             auto_update (boolean): enable auto update (need documentation)
+            auto_retry_on_incomplete_http (boolean): auto retry http call (GET only) if I catch an incomplete stream. See README.
+            timeout (integer): time to wait the http response (seconds)
         """
         self._host = host
         self._port = port
         self._auto_update = auto_update
+        self._auto_retry_on_incomplete_http = auto_retry_on_incomplete_http
+        self._timeout = timeout
 
     def _make_request(self, type='GET', request=None):
         print('New request %s' % (type))
-        if type == 'GET':
-            url = 'http://%s:%s%s' % (self._host, self._port, _PATH_GET)
-            r = requests.get(url)
-        elif type == 'POST':
-            url = 'http://%s:%s%s' % (self._host, self._port, _PATH_POST)
-            headers = {
-                'Accept': '*/*',
-                'X-Requested-With': 'XMLHttpRequest',
-                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            }
-            device = request['device']
-            key = request['key']
-            value = request['value']
-            id = request['id']
-            # TODO : build xml with elementree ?
-            data = """<?xml version="1.0" encoding="UTF-8"?>
-            <Devices>
-                <Device>
-                    <%s nr="%s">
-                        <%s>%s</%s>
-                    </%s>
-                </Device>
-            </Devices>""" % (device, id, key, value, key, device)
-            r = requests.post(url, headers=headers, data=data)
+        is_complete = False
+        while not is_complete:
+            if type == 'GET':
+                url = 'http://%s:%s%s' % (self._host, self._port, _PATH_GET)
+                r = requests.get(url, timeout=self._timeout)
+            elif type == 'POST':
+                url = 'http://%s:%s%s' % (self._host, self._port, _PATH_POST)
+                headers = {
+                    'Accept': '*/*',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                }
+                device = request['device']
+                key = request['key']
+                value = request['value']
+                id = request['id']
+                # TODO : build xml with elementree ?
+                data = """<?xml version="1.0" encoding="UTF-8"?>
+                <Devices>
+                    <Device>
+                        <%s nr="%s">
+                            <%s>%s</%s>
+                        </%s>
+                    </Device>
+                </Devices>""" % (device, id, key, value, key, device)
+                r = requests.post(url, headers=headers, data=data, timeout=self._timeout)
+
+            expected_length = r.headers.get('Content-Length')
+            if expected_length is not None:
+                actual_length = r.raw.tell()
+                expected_length = int(expected_length)
+                if actual_length < expected_length:
+                    print('Warning : incomplete read ({} bytes read, {} more expected)'.format(actual_length, expected_length - actual_length))
+                    if type == 'GET':
+                        if self._auto_retry_on_incomplete_http:
+                            is_complete = False
+                        else:
+                            print('No autoretry')
+                            is_complete = True
+                else:
+                    is_complete = True
+
         if r.status_code == 200:
             root = ET.fromstring(r.text)
             return root
