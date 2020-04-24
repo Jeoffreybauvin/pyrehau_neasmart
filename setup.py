@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pyrehau_neasmart", # Replace with your own username
-    version="0.0.4",
+    version="0.0.5",
     author="Jeoffrey BAUVIN",
     author_email="jeoffrey.bauvin@gmail.com",
     description="A python package to interact with Rehaut Nea Smart interface",

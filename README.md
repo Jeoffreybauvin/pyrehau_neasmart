@@ -34,7 +34,7 @@ See CHANGELOG.md
 - [x] Get HEAT AREAS
 - [ ] Get IODEVICES
 - [ ] Get heatareas's schedules
-- [ ] Modify (POST) some informations (modify the heat area's wanted temperature)
+- [x] Modify (POST) some informations (modify the heat area's wanted temperature)
 - [ ] Logs ?
 - [ ] Feel free to submit an issue ;).
 
@@ -91,8 +91,22 @@ Every property you'll get in status in directly callable :
 '2'
 ```
 
-### Change parameter from heatarea
+### Change the target temperature for a heatarea
 
 ```
+>>> ha = rh.heatareas()[4]
 >>> ha.set_t_target(18)
+```
+
+### Change the heat area mode for a heatarea
+
+| HEAT AREA MDOE VALUE  | DESCRIPTION |
+| ------------- | ------------- |
+| 0  | AUTO mode  |
+| 1  | COMFORT mode  |
+| 2  | ECO mode  |
+
+```
+>>> ha = rh.heatareas()[4]
+>>> ha.set_heatarea_mode(2)
 ```

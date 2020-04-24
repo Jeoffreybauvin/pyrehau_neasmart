@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.5] - 2020-04-24
+
+### Added
+
+- Some docstrings (generate doc with pdoc)
+- Ability to change target temperature 	and heat area mode (POST requests)
+- Handle errors
+
+### Changed
+
+- Nothing
+
 ## [0.0.4] - 2020-01-26
 
 ### Added

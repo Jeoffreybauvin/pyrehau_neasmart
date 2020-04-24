@@ -13,15 +13,35 @@ _MODES = ["auto", "day", "night"]
 _PATH_GET = '/data/static.xml'
 _PATH_POST = '/data/changes.xml'
 
+HEATAREA_MODES = {
+    0: "AUTO",
+    1: "COMFORT",
+    2: "ECO",
+}
+
 def autoupdate_property(func):
     def update_and_get(*args):
         args[0]._update_if_needed()
         return func(*args)
     return property(update_and_get)
 
+class RehauNeaSmartError(Exception):
+
+    def __init__(self, value):
+        self.value = value
+
+    # __str__ is to print() the value
+    def __str__(self):
+        return(repr(self.value))
+
 class RehauNeaSmart(object):
     def __init__(self, host, port=80, auto_update=True):
-        """Initialize the Rehau NeaSmart instance."""
+        """
+        Args:
+            host (string): Rehau Nea Smart hostname (or IP)
+            port (integer): default 80
+            auto_update (boolean): enable auto update (need documentation)
+        """
         self._host = host
         self._port = port
         self._auto_update = auto_update
@@ -32,7 +52,6 @@ class RehauNeaSmart(object):
             url = 'http://%s:%s%s' % (self._host, self._port, _PATH_GET)
             r = requests.get(url)
         elif type == 'POST':
-            print('making a post request')
             url = 'http://%s:%s%s' % (self._host, self._port, _PATH_POST)
             headers = {
                 'Accept': '*/*',
@@ -61,11 +80,16 @@ class RehauNeaSmart(object):
 
 
     def heatareas(self):
-        """Return a list of heatareas"""
+        """
+        Returns:
+            a list of heatareas
+        """
+
         devices = []
         oneshot = self._make_request(type='GET')
-        for child in oneshot.iter(tag='HEATAREA'):
-            devices.append(RehauNeaSmartHeatarea(self, id=child.attrib['nr'], auto_update=self._auto_update))
+        if oneshot:
+            for child in oneshot.iter(tag='HEATAREA'):
+                devices.append(RehauNeaSmartHeatarea(self, id=child.attrib['nr'], auto_update=self._auto_update))
         return devices
 
 
@@ -131,13 +155,40 @@ class RehauNeaSmartHeatarea(object):
             "islocked": self._islocked
         }
 
+
     def set_t_target(self, value):
+        """
+        Usage:
+            Set a new target temperature
+        Args:
+            value (integer / float): The requested temperature
+        """
         request = {
-            'value': value,
+            'value': float(value),
             'key': 'T_TARGET',
         }
         self._make_request(type='POST', request=request)
         self._clear_status()
+
+    def set_heatarea_mode(self, value):
+        """
+        Usage:
+            Set a new heatarea mode. See possibles values in args section
+
+        Args:
+            value (integer): 0 : AUTO / 1 : COMFORT / 2: ECO. Any other value will throw an error
+        """
+
+        if value not in HEATAREA_MODES:
+            raise(RehauNeaSmartError('%s is not a valid heatarea_mode value. Please check the documentation' % value))
+
+        request = {
+            'value': value,
+            'key': 'HEATAREA_MODE',
+        }
+        self._make_request(type='POST', request=request)
+        self._clear_status()
+
 
     @autoupdate_property
     def heatarea_name(self):
