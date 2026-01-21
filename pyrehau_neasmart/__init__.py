@@ -58,6 +58,20 @@ class RehauNeaSmart(object):
             return False
 
 
+    def get_heatarea(self, nr):
+        """
+        Args:
+            nr (string): HEATAREA_NR
+        Returns:
+            RehauNeaSmartHeatarea object or None
+        """
+        oneshot = self._make_request(type='GET')
+        if oneshot:
+            for child in oneshot.iter(tag='HEATAREA'):
+                if child.attrib['nr'] == str(nr):
+                    return RehauNeaSmartHeatarea(self, id=child.attrib['nr'], auto_update=self._auto_update)
+        return None
+
     def heatareas(self):
         """
         Returns:

@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added `RehauNeaSmartIoDevice` class in `pyrehau_neasmart/iodevice.py`.
 - Added `iodevices()` method to `RehauNeaSmart` to list IO devices.
+- Added `get_heatarea(nr)` method to `RehauNeaSmart`.
+
 
 
 ## [0.0.7] - 2026-01-21
