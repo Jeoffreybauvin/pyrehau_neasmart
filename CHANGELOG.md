@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `iodevices()` method to `RehauNeaSmart` to list IO devices.
 - Added `get_heatarea(nr)` method to `RehauNeaSmart`.
 - Added `get_iodevice(nr)` method to `RehauNeaSmart`.
+- Added `RehauNeaSmartDevice` class and `device()` method to `RehauNeaSmart` to get controller info.
+
 
 
 
