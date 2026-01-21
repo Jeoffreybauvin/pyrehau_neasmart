@@ -1,0 +1,8 @@
+services:
+  pyrehau-dev:
+    build: .
+    volumes:
+      - .:/app
+    command: tail -f /dev/null
+    environment:
+      - PYTHONUNBUFFERED=1
