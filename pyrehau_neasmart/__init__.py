@@ -85,6 +85,20 @@ class RehauNeaSmart(object):
                 devices.append(RehauNeaSmartHeatarea(self, id=child.attrib['nr'], auto_update=self._auto_update))
         return devices
 
+    def get_iodevice(self, nr):
+        """
+        Args:
+            nr (string): IODEVICE_NR
+        Returns:
+            RehauNeaSmartIoDevice object or None
+        """
+        oneshot = self._make_request(type='GET')
+        if oneshot:
+            for child in oneshot.iter(tag='IODEVICE'):
+                if child.attrib['nr'] == str(nr):
+                    return RehauNeaSmartIoDevice(self, id=child.attrib['nr'], auto_update=self._auto_update)
+        return None
+
     def iodevices(self):
         """
         Returns:
