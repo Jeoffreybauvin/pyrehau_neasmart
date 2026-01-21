@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.8] - 2026-01-21
+
+### Changed
+- Refactored project structure: moved `RehauNeaSmartHeatarea` to `pyrehau_neasmart/heatarea.py`.
+- Extracted constants to `const.py`, exceptions to `exceptions.py`, and utils to `utils.py`.
+
+### Added
+- Added `RehauNeaSmartIoDevice` class in `pyrehau_neasmart/iodevice.py`.
+- Added `iodevices()` method to `RehauNeaSmart` to list IO devices.
+- Added `get_heatarea(nr)` method to `RehauNeaSmart`.
+- Added `get_iodevice(nr)` method to `RehauNeaSmart`.
+- Added `RehauNeaSmartDevice` class and `device()` method to `RehauNeaSmart` to get controller info.
+
+
+
+
+
 ## [0.0.7] - 2026-01-21
 
 ### Changed
