@@ -106,7 +106,26 @@ Every property you'll get in status in directly callable :
 | 1  | COMFORT mode  |
 | 2  | ECO mode  |
 
+
+## Development
+
+A `docker-compose.dev.yml` file is provided to easily run the package in a Docker container.
+
+### Prerequisites
+
+- Docker
+- Docker Compose
+
+### Run the container
+
+```bash
+docker-compose -f docker-compose.dev.yml up -d --build
 ```
->>> ha = rh.heatareas()[4]
->>> ha.set_heatarea_mode(2)
+
+### Enter the container
+
+```bash
+docker-compose -f docker-compose.dev.yml exec pyrehau-dev bash
 ```
+
+Inside the container, the package is installed in editable mode. You can edit the code in your favorite IDE and test it inside the container.
