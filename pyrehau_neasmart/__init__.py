@@ -8,6 +8,7 @@ except ImportError:
 
 from .const import _PATH_GET, _PATH_POST
 from .heatarea import RehauNeaSmartHeatarea
+from .iodevice import RehauNeaSmartIoDevice
 from .exceptions import RehauNeaSmartError
 
 __author__ = "Jeoffrey Bauvin"
@@ -69,3 +70,17 @@ class RehauNeaSmart(object):
             for child in oneshot.iter(tag='HEATAREA'):
                 devices.append(RehauNeaSmartHeatarea(self, id=child.attrib['nr'], auto_update=self._auto_update))
         return devices
+
+    def iodevices(self):
+        """
+        Returns:
+            a list of iodevices
+        """
+
+        devices = []
+        oneshot = self._make_request(type='GET')
+        if oneshot:
+            for child in oneshot.iter(tag='IODEVICE'):
+                devices.append(RehauNeaSmartIoDevice(self, id=child.attrib['nr'], auto_update=self._auto_update))
+        return devices
+

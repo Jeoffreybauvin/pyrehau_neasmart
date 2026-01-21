@@ -11,6 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refactored project structure: moved `RehauNeaSmartHeatarea` to `pyrehau_neasmart/heatarea.py`.
 - Extracted constants to `const.py`, exceptions to `exceptions.py`, and utils to `utils.py`.
 
+### Added
+- Added `RehauNeaSmartIoDevice` class in `pyrehau_neasmart/iodevice.py`.
+- Added `iodevices()` method to `RehauNeaSmart` to list IO devices.
+
+
 ## [0.0.7] - 2026-01-21
 
 ### Changed
